@@ -1,0 +1,9 @@
+version: '3'
+services:
+  adf_webhook:
+    container_name: adf_webhook
+    image: hsiangsun/adf_webhook:1.4  # replace your image name and tag
+    ports:
+      - "3030:3030"  #port forward
+    volumes:
+      - ./.env:/app/.env

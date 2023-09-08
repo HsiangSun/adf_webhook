@@ -1,0 +1,36 @@
+[package]
+name = "adf_webhook"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+#axum = "0.6.20"
+axum = { version = "0.6.20", features = ["tracing"] }
+tokio = { version = "1.0", features = ["full"] }
+lettre = { version = "0.10.4", features = ["tracing"] }
+#err
+anyhow = "1.0"
+thiserror = "1.0.48"
+#json
+serde = { version = "1.0", features = ["derive"] }
+log = "0.4.20"
+#tracing
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+axum-auth = { version = "0.4", default-features = false, features = ["auth-basic"] }
+#config
+dotenvs = "0.1.0"
+# must import because AddExtensionLayer is a part of tower-http
+tower-http = { version = "0.4.4", features = ["add-extension", "auth", "compression-full", "trace"] }
+
+#ssl
+openssl-sys = "0.9.93"
+
+
+[features]
+# Force openssl-sys to staticly link in the openssl library. Necessary when
+# cross compiling to x86_64-unknown-linux-musl.
+vendored = ["openssl-sys/vendored"]
+
