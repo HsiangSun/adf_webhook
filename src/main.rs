@@ -40,7 +40,6 @@ async fn webhook_handler(
     let email = Message::builder()
     .from(format!("Data Factory <{}>",app_config.sender).parse().unwrap())
     //.reply_to("Yuin <yuin@domain.tld>".parse().unwrap())
-    // .to("Nayif <m.nayif@afun.com>".parse().unwrap())
     .to(format!("Nayif <{}>",app_config.receiver).parse().unwrap())
     .subject("Database sync complete")
     .header(ContentType::TEXT_PLAIN)
