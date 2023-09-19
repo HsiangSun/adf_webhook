@@ -5,15 +5,7 @@ use axum::{
     http::StatusCode,
     routing::post,
     Router,
-    http::Request,
 };
-use axum_server::accept::DefaultAcceptor;
-use axum_server::tls_rustls::RustlsConfig;
-use hyper::server::accept::Accept;
-use hyper::server::conn::{AddrIncoming, Http};
-use rustls::ServerConfig;
-use tokio::net::TcpListener;
-use tokio_rustls::TlsAcceptor;
 use tower_http::add_extension::AddExtensionLayer;
 use lettre::message::header::ContentType;
 use lettre::transport::smtp::authentication::Credentials;
@@ -45,7 +37,8 @@ use crate::tls::tls_config::rustls_server_config;
 
 async fn webhook_handler(
     AuthBasic((name, password)): AuthBasic,
-    Extension(app_config): Extension<AppConfig>
+    Extension(app_config): Extension<AppConfig>,
+    Json(json_body):Json<ReqData>,
 ) -> Result<Response, AppError> {
 
     match password {
@@ -56,14 +49,44 @@ async fn webhook_handler(
             }
         }
     }
+
+
+    //time zone offset
+    let dubai_timezone = chrono::FixedOffset::east_opt(4 * 3600).unwrap();
+
+    let current_time = Local::now().with_timezone(&dubai_timezone);
+
+
+    let formatted_time = current_time.format("%Y-%m-%d %H:%M:%S").to_string();
    
     let email = Message::builder()
     .from(format!("Data Factory <{}>",app_config.sender).parse().unwrap())
     //.reply_to("Yuin <yuin@domain.tld>".parse().unwrap())
     .to(format!("Nayif <{}>",app_config.receiver).parse().unwrap())
     .subject("Database sync complete")
-    .header(ContentType::TEXT_PLAIN)
-    .body(String::from("Hello Nayif, today's data have been synced. Have a good day :)"))
+    .header(ContentType::TEXT_HTML)
+    .body(
+        format!(
+            r#"<html>
+                <body>
+                    <p>Hello Nayif,</p>
+                    <table border="1">
+                        <tr>
+                            <th>pipeline name</th>
+                            <th>complete time</th>
+                        </tr>
+                        <tr>
+                            <td>{}</td>
+                            <td>{}</td>
+                        </tr>
+                    </table>
+                    <p>Have a good day :)</p>
+                </body>
+                </html>"#,
+            json_body.table_name,
+            formatted_time,
+        )
+    )
     .unwrap();
 
     let creds = Credentials::new(app_config.sender, app_config.smtp_token);

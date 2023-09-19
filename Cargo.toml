@@ -25,6 +25,7 @@ axum-auth = { version = "0.4", default-features = false, features = ["auth-basic
 dotenvs = "0.1.0"
 # must import because AddExtensionLayer is a part of tower-http
 tower-http = { version = "0.4.4", features = ["add-extension", "auth", "compression-full", "trace"] }
+chrono = "0.4.31"
 
 axum-server = { version = "0.3", features = ["tls-rustls"] }
 
