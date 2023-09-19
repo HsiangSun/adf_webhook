@@ -28,6 +28,7 @@ WORKDIR /app
 # Copy the compiled binary and .env file from the builder stage
 COPY --from=builder /app/target/x86_64-unknown-linux-musl/release/adf_webhook /app/adf_webhook
 COPY --from=builder /app/.env /app/.env
+COPY --from=builder /app/certs/ /app/certs/
 
 # Start your Rust application
 CMD ["/app/adf_webhook"]
