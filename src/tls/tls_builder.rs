@@ -43,7 +43,8 @@ async fn build_rustls_server_config(cert: &str, key: &str, ca: Option<&str>) -> 
                   .add(&rustls::Certificate(ca))
                   .expect("bad ca cert");
               config_builder
-                  .with_client_cert_verifier(WebPkiClientVerifier::no_client_auth())
+                //   .with_client_cert_verifier(WebPkiClientVerifier::no_client_auth())
+                    .with_no_client_auth()
                   .with_single_cert(cert, key)
                   .expect("bad certificate/key")
           } else {
